@@ -1,0 +1,157 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta
+    name="description"
+    content="Phone Stock Manager - Manage products, purchases, sales and expenses"
+  >
+
+  <title>Phone Stock Manager</title>
+
+  <!-- Application CSS -->
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+
+<body>
+
+  <!-- =========================
+       SIDEBAR
+  ========================== -->
+  <aside class="sidebar">
+
+    <div class="sidebar-header">
+      <h1>Stock Manager</h1>
+      <p>Phone Accessories & Parts</p>
+    </div>
+
+    <nav class="navigation">
+
+      <button
+        type="button"
+        class="nav-btn active"
+        data-p="dashboard"
+      >
+        Dashboard
+      </button>
+
+      <button
+        type="button"
+        class="nav-btn"
+        data-p="products"
+      >
+        Products
+      </button>
+
+      <button
+        type="button"
+        class="nav-btn"
+        data-p="sales"
+      >
+        Sales
+      </button>
+
+      <button
+        type="button"
+        class="nav-btn"
+        data-p="sales-history"
+      >
+        Sales History
+      </button>
+
+      <button
+        type="button"
+        class="nav-btn"
+        data-p="purchases"
+      >
+        Purchases
+      </button>
+
+      <button
+        type="button"
+        class="nav-btn"
+        data-p="expenses"
+      >
+        Expenses
+      </button>
+
+    </nav>
+
+    <div class="sidebar-footer">
+      <p>Phone Stock Manager</p>
+      <small>v1.0.0</small>
+    </div>
+
+  </aside>
+
+
+  <!-- =========================
+       MAIN CONTENT
+  ========================== -->
+  <main class="main-content">
+
+    <!-- TOP HEADER -->
+    <header class="top-header">
+
+      <div>
+        <h2 id="title">Dashboard</h2>
+        <p id="page-description">
+          Overview of your phone stock business
+        </p>
+      </div>
+
+      <div class="header-right">
+        <span id="status"></span>
+
+        <button
+          type="button"
+          id="logout-btn"
+          class="refresh-btn"
+          hidden
+        >
+          Logout
+        </button>
+
+        <button
+          type="button"
+          id="refresh-btn"
+          class="refresh-btn"
+        >
+          Refresh
+        </button>
+      </div>
+
+    </header>
+
+
+    <!-- =========================
+         APPLICATION AREA
+    ========================== -->
+    <section id="app">
+
+      <!-- Dashboard content will be loaded here by app.js -->
+
+      <div class="loading">
+        Loading...
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- =========================
+       JAVASCRIPT
+  ========================== -->
+
+  <script src="/js/app.js"></script>
+
+</body>
+</html>
