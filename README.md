@@ -7,6 +7,11 @@ Express.js + MongoDB/Mongoose inventory and profit tracker.
 3. Run `npm install` then `npm run dev`.
 4. Open http://localhost:3000
 
+The frontend is an installable PWA. In a Chromium-based browser, use the
+browser install icon or menu option while visiting the app to add Stock
+Manager to your desktop or Android home screen. The app shell is cached for
+fast startup, while authenticated API data is always fetched from the server.
+
 ## API
 GET /api/health
 GET/POST/PATCH /api/products

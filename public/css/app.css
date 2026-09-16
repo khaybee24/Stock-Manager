@@ -19,6 +19,8 @@ body {
   background: #f5f7fb;
   color: #1f2937;
   min-height: 100vh;
+  min-height: 100svh;
+  overscroll-behavior-y: none;
 }
 
 
@@ -409,6 +411,7 @@ body.auth-mode #app {
   flex: 1;
   padding: 28px;
   min-width: 0;
+  padding-bottom: calc(28px + env(safe-area-inset-bottom));
 }
 
 

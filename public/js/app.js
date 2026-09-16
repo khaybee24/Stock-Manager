@@ -5,10 +5,29 @@ const status = document.getElementById('status');
 const pageDescription = document.getElementById('page-description');
 const refreshBtn = document.getElementById('refresh-btn');
 const logoutBtn = document.getElementById('logout-btn');
+const installBtn = document.getElementById('install-btn');
 
 let currentPage = 'dashboard';
 const uri = window.location.origin;
 let authToken = localStorage.getItem('phone-stock-token');
+let deferredInstallPrompt;
+
+window.addEventListener('beforeinstallprompt', event => {
+  event.preventDefault();
+  deferredInstallPrompt = event;
+
+  if (installBtn && authToken) {
+    installBtn.hidden = false;
+  }
+});
+
+window.addEventListener('appinstalled', () => {
+  deferredInstallPrompt = null;
+
+  if (installBtn) {
+    installBtn.hidden = true;
+  }
+});
 
 // ======================================================
 // HELPERS
@@ -126,6 +145,10 @@ function saveAuth(data) {
 
   if (logoutBtn) {
     logoutBtn.hidden = false;
+  }
+
+  if (installBtn && deferredInstallPrompt) {
+    installBtn.hidden = false;
   }
 }
 
@@ -1807,6 +1830,25 @@ if (logoutBtn) {
   });
 }
 
+if (installBtn) {
+  installBtn.addEventListener('click', async () => {
+    if (!deferredInstallPrompt) return;
+
+    deferredInstallPrompt.prompt();
+    await deferredInstallPrompt.userChoice;
+    deferredInstallPrompt = null;
+    installBtn.hidden = true;
+  });
+}
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(error => {
+      console.error('Service worker registration failed:', error);
+    });
+  });
+}
+
 if (authToken) {
   if (window.location.pathname === '/login' || window.location.pathname === '/signup') {
     window.history.replaceState({}, '', '/dashboard');
@@ -1815,6 +1857,9 @@ if (authToken) {
   }
 
   logoutBtn.hidden = false;
+  if (installBtn && deferredInstallPrompt) {
+    installBtn.hidden = false;
+  }
   const initialPage = Object.keys(pagePaths).find(
     page => pagePaths[page] === window.location.pathname
   ) || 'dashboard';
