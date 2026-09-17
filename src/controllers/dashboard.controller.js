@@ -1,7 +1,7 @@
 const Product = require('../models/Product');
 const Sale = require('../models/Sale');
 const Expense = require('../models/Expense');
-const DailySummary = require('../models/DailySummary');
+const DailySummary = require('../models/dailySummary');
 
 exports.getDashboard = async (req, res) => {
   try {
