@@ -567,6 +567,193 @@ async function dashboard() {
 
 
 // ======================================================
+// DAILY HISTORY
+// ======================================================
+
+async function dailyHistory(startDate = '', endDate = '') {
+
+  setPage(
+    'Daily History',
+    'Review your saved daily sales and profit summaries',
+    'dailyHistory'
+  );
+
+  setLoading();
+
+  try {
+    const params = new URLSearchParams();
+
+    if (startDate) params.set('startDate', startDate);
+    if (endDate) params.set('endDate', endDate);
+
+    const query = params.toString();
+    const response = await api(
+      `/api/dashboard/history${query ? `?${query}` : ''}`
+    );
+    const summaries = Array.isArray(response.daily) ? response.daily : [];
+    const totals = response.totals || {
+      sales: 0,
+      grossProfit: 0,
+      expenses: 0,
+      netProfit: 0,
+    };
+
+    setStatus(`${response.count || 0} daily summaries`, 'success');
+
+    app.innerHTML = `
+      <div class="history-toolbar">
+        <div class="date-filters">
+          <label>
+            From
+            <input
+              type="date"
+              id="daily-history-start"
+              value="${escapeHTML(startDate)}"
+            >
+          </label>
+
+          <label>
+            To
+            <input
+              type="date"
+              id="daily-history-end"
+              value="${escapeHTML(endDate)}"
+            >
+          </label>
+
+          <button class="btn secondary" type="button" id="filter-daily-history-btn">
+            Filter
+          </button>
+
+          <button class="btn ghost" type="button" id="clear-daily-history-btn">
+            Clear
+          </button>
+        </div>
+
+        <div class="search-box">
+          <input
+            type="search"
+            id="daily-history-search"
+            class="search-input"
+            placeholder="Search loaded dates..."
+            aria-label="Search daily history by date"
+          >
+        </div>
+
+        <button class="btn primary" type="button" onclick="dashboard()">
+          Back to Dashboard
+        </button>
+      </div>
+
+      <div class="cards history-summary-cards">
+        <div class="card">
+          <div class="label">Period Sales</div>
+          <div class="value">${money(totals.sales)}</div>
+        </div>
+        <div class="card">
+          <div class="label">Gross Profit</div>
+          <div class="value">${money(totals.grossProfit)}</div>
+        </div>
+        <div class="card">
+          <div class="label">Expenses</div>
+          <div class="value">${money(totals.expenses)}</div>
+        </div>
+        <div class="card">
+          <div class="label">Net Profit</div>
+          <div class="value">${money(totals.netProfit)}</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <h3>Daily performance</h3>
+            <p>
+              ${startDate || endDate
+                ? `Showing ${escapeHTML(response.period.startDate || 'all dates')} to ${escapeHTML(response.period.endDate || 'today')}`
+                : 'One summary is stored for each day you open the dashboard.'}
+            </p>
+          </div>
+        </div>
+
+        ${summaries.length ? `
+          <div class="table-wrapper">
+            <table id="daily-history-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Sales</th>
+                  <th>Gross Profit</th>
+                  <th>Expenses</th>
+                  <th>Net Profit</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${summaries.map(summary => `
+                  <tr>
+                    <td data-history-date="${escapeHTML(dateOnly(summary.date))}">
+                      <strong>${escapeHTML(dateOnly(summary.date))}</strong>
+                    </td>
+                    <td>${money(summary.sales)}</td>
+                    <td class="profit">${money(summary.grossProfit)}</td>
+                    <td>${money(summary.expenses)}</td>
+                    <td class="${Number(summary.netProfit || 0) >= 0 ? 'profit' : 'out'}">
+                      ${money(summary.netProfit)}
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        ` : `
+          <div class="empty">
+            <p>No daily history has been recorded yet.</p>
+            <button class="btn secondary" type="button" onclick="dashboard()">
+              Load Today
+            </button>
+          </div>
+        `}
+      </div>
+    `;
+
+    const search = document.getElementById('daily-history-search');
+    search.addEventListener('input', () => {
+      const query = search.value.toLowerCase();
+
+      document
+        .querySelectorAll('#daily-history-table tbody tr')
+        .forEach(row => {
+          row.style.display = row.textContent.toLowerCase().includes(query)
+            ? ''
+            : 'none';
+        });
+    });
+
+      document.getElementById('filter-daily-history-btn').addEventListener('click', () => {
+        const nextStartDate = document.getElementById('daily-history-start').value;
+        const nextEndDate = document.getElementById('daily-history-end').value;
+
+        if (nextStartDate && nextEndDate && nextStartDate > nextEndDate) {
+          setStatus('Start date cannot be greater than end date', 'error');
+          return;
+        }
+
+        dailyHistory(nextStartDate, nextEndDate);
+      });
+
+      document.getElementById('clear-daily-history-btn').addEventListener('click', () => {
+        dailyHistory();
+      });
+  } catch (error) {
+    if (error.code === 'AUTH_REQUIRED') return;
+
+    setStatus(error.message, 'error');
+    showError(error.message, () => dailyHistory(startDate, endDate));
+  }
+}
+
+
+// ======================================================
 // PRODUCTS
 // ======================================================
 
@@ -1731,6 +1918,7 @@ function showError(message, retryFunction) {
 
 const pages = {
   dashboard,
+  dailyHistory,
   products,
   sales,
   salesHistory,
@@ -1740,6 +1928,7 @@ const pages = {
 
 const pagePaths = {
   dashboard: '/dashboard',
+  dailyHistory: '/dashboard/history',
   products: '/products',
   sales: '/sales',
   salesHistory: '/sales/history',

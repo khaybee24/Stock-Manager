@@ -1291,6 +1291,10 @@ body:not(.auth-mode) .spinner {
   flex-wrap: wrap;
 }
 
+.history-summary-cards {
+  margin-top: 20px;
+}
+
 .date-filters {
   display: flex;
   align-items: end;

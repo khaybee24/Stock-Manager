@@ -21,7 +21,7 @@ app.get('/login', (req, res) => {
 app.get('/signup', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
 });
-app.get(['/dashboard', '/products', '/sales', '/sales/history', '/purchases', '/expenses'], (req, res) => {
+app.get(['/dashboard', '/dashboard/history', '/products', '/sales', '/sales/history', '/purchases', '/expenses'], (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 app.get('/api/health', (q,s)=>s.json({status:'ok'}));
